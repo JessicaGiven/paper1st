@@ -2,6 +2,7 @@
 #include <highgui.h>
 #include "opencv2/legacy/legacy.hpp"
 #include <math.h>
+#include <adhs.h>
 //#include "opencv2/core/core_c.h"
 //#include "opencv2/core/core.hpp"
 //#define _CRT_SECURE_NO_WARNINGS 1
@@ -95,11 +96,11 @@ int main()
 		criteria = cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.1);
 
 		// (2)º∆À„£®HS£©
-		cvCalcOpticalFlowHS(frame1_1C, frame2_1C, 0, velx, vely, 100, criteria);
+		adHS(frame1_1C, frame2_1C, 0, velx, vely, 100, criteria);
 		//£®3£© ª≠Õº
 
 		for (i = 0; i < cols; i++) {
-			for (j = 0; j < rows; j++) {
+			for (j = 0; j < rows; j++) { 
 				dx = (int)cvGetReal2D(velx, j, i);
 				dy = (int)cvGetReal2D(vely, j, i);
 				f = sqrt(dx*dx  + dy*dy) / 10;

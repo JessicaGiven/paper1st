@@ -73,6 +73,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>F:\opencv\sources\modules\legacy\src;F:\git\paper1st\Code\Code;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -141,11 +142,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="adhs.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="optflowhs.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\precomp.hpp" />
+    <ClInclude Include="adhs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

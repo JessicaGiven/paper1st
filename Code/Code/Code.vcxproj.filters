@@ -18,12 +18,12 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="optflowhs.cpp">
+    <ClCompile Include="adhs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\precomp.hpp">
+    <ClInclude Include="adhs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
