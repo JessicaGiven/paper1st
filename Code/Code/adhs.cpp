@@ -67,26 +67,26 @@ icvDerProductEx;
 //    Purpose: calculate Optical flow for 2 images using Horn & Schunck algorithm
 //    Context:
 //    Parameters:
-//            imgA          -  pointer to first frame ROI
-//            imgB          -  pointer to second frame ROI
-//            imgStep       -  width of single row of source images in bytes
-//            imgSize       -  size of the source image ROI
-//            usePrevious   - use previous (input) velocity field.
-//            velocityX     - pointer to horizontal and
-//            velocityY     - vertical components of optical flow ROI
-//            velStep       - width of single row of velocity frames in bytes
-//            lambda        - Lagrangian multiplier
-//            criteria      - criteria of termination processmaximum number of iterations
+//            imgA          -  pointer to first frame ROI 指向第一帧图像ROI的指针
+//            imgB          -  pointer to second frame ROI 指向第二帧图像ROI的指针
+//            imgStep       -  width of single row of source images in bytes 原图像一行的像素数
+//            imgSize       -  size of the source image ROI 原图像尺寸
+//            usePrevious   -  use previous (input) velocity field. 是否使用上一帧的速度向量
+//            velocityX     -  pointer to horizontal and 
+//            velocityY     -  vertical components of optical flow ROI X、Y方向的速度向量帧
+//            velStep       -  width of single row of velocity frames in bytes 速度向量帧行宽
+//            lambda        -  Lagrangian multiplier 拉格朗日乘子？
+//            criteria      -  criteria of termination processmaximum number of iterations 循环执行规则
 //
-//    Returns: CV_OK         - all ok
+//    Returns: CV_OK         - all ok 成功标志位
 //             CV_OUTOFMEM_ERR  - insufficient memory for function work
 //             CV_NULLPTR_ERR - if one of input pointers is NULL
-//             CV_BADSIZE_ERR   - wrong input sizes interrelation
+//             CV_BADSIZE_ERR   - wrong input sizes interrelation 一系列错误返回值
 //
-//    Notes:  1.Optical flow to be computed for every pixel in ROI
-//            2.For calculating spatial derivatives we use 3x3 Sobel operator.
+//    Notes:  1.Optical flow to be computed for every pixel in ROI 针对ROI中的所有像素计算光流
+//            2.For calculating spatial derivatives we use 3x3 Sobel operator. 用3x3的Sobel算子计算空间导数
 //            3.We use the following border mode.
-//              The last row or column is replicated for the border
+//              The last row or column is replicated for the border 复制最后一行或最后一列作为边界
 //              ( IPL_BORDER_REPLICATE in IPL ).
 //
 //
@@ -94,6 +94,9 @@ icvDerProductEx;
 static CvStatus CV_STDCALL
 icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
                              uchar*  imgB,
+							 uchar*  imgC,
+							 uchar*  imgD,
+							 uchar*  imgE,
                              int     imgStep,
                              CvSize imgSize,
                              int     usePrevious,
@@ -101,12 +104,13 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
                              float*  velocityY,
                              int     velStep,
                              float   lambda,
+							 float   alpha,
                              CvTermCriteria criteria )
 {
-    /* Loops indexes */
+    /* Loops indexes 循环索引 */ 
     int i, j, k, address;
 
-    /* Buffers for Sobel calculations */
+    /* Buffers for Sobel calculations Sobel滤波的缓冲区 */
     float *MemX[2];
     float *MemY[2];
 
@@ -125,23 +129,23 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
     int iter = 0;
     int Stop;
 
-    /* buffers derivatives product */
-    icvDerProductEx *II;
+    /* buffers derivatives product 导数运算结果的缓冲区 */
+    icvDerProductEx *II[10];
 
     float *VelBufX[2];
     float *VelBufY[2];
 
-    /* variables for storing number of first pixel of image line */
+    /* variables for storing number of first pixel of image line 用于存储图像头一个像素的变量 */
     int Line1;
     int Line2;
     int Line3;
 
     int pixNumber;
 	 
-    /* auxiliary */
+    /* auxiliary 辅助变量*/
     int NoMem = 0;
 
-    /* Checking bad arguments */
+    /* Checking bad arguments 检查错误 */
     if( imgA == NULL )
         return CV_NULLPTR_ERR;
     if( imgB == NULL )
@@ -160,7 +164,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
     velStep /= 4;
 
     /****************************************************************************************/
-    /* Allocating memory for all buffers                                                    */
+    /* Allocating memory for all buffers 为所有缓冲区分配内存                                 */
     /****************************************************************************************/
     for( k = 0; k < 2; k++ )
     {
@@ -210,7 +214,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
         return CV_OUTOFMEM_ERR;
     }
 /****************************************************************************************\
-*         Calculate first line of memX and memY                                          *
+*         Calculate first line of memX and memY 计算 memX 和 memY 的第一行                *
 \****************************************************************************************/
     MemY[0][0] = MemY[1][0] = CONV( imgA[0], imgA[0], imgA[1] );
     MemX[0][0] = MemX[1][0] = CONV( imgA[0], imgA[0], imgA[imgStep] );
@@ -238,7 +242,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
 
 
 /****************************************************************************************\
-*     begin scan image, calc derivatives                                                 *
+*     begin scan image, calc derivatives 开始遍历图像，计算导数                            *
 \****************************************************************************************/
 
     ConvLine = 0;
@@ -325,7 +329,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
         ConvLine++;
     }
 /****************************************************************************************\
-*      Prepare initial approximation                                                     *
+*      Prepare initial approximation  准备初始的近似值                                    *
 \****************************************************************************************/
     if( !usePrevious )
     {
@@ -342,7 +346,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
         }
     }
 /****************************************************************************************\
-*      Perform iterations                                                                *
+*      Perform iterations 处理循环                                                        *
 \****************************************************************************************/
     iter = 0;
     Stop = 0;
@@ -354,7 +358,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
 
         iter++;
 /****************************************************************************************\
-*     begin scan velocity and update it                                                  *
+*     begin scan velocity and update it 计算速度并更新                                    *
 \****************************************************************************************/
         Line2 = -velStep;
         for( i = 0; i < imageHeight; i++ )
@@ -496,16 +500,20 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
 //    Notes:
 //F*/
 CV_IMPL void
-adHS( const void* srcarrA, const void* srcarrB, int usePrevious,
+adHS(const void* srcarrA, const void* srcarrB, const void* srcarrC, const void* srcarrD, const void* srcarrE, int usePrevious,
                      void* velarrx, void* velarry,
+					 float alpha, 
                      double lambda, CvTermCriteria criteria )
 {
     CvMat stubA, *srcA = cvGetMat( srcarrA, &stubA );
     CvMat stubB, *srcB = cvGetMat( srcarrB, &stubB );
+	CvMat stubC, *srcC = cvGetMat( srcarrC, &stubC );
+	CvMat stubD, *srcD = cvGetMat( srcarrD, &stubD );
+	CvMat stubE, *srcE = cvGetMat( srcarrE, &stubE );
     CvMat stubx, *velx = cvGetMat( velarrx, &stubx );
-    CvMat stuby, *vely = cvGetMat( velarry, &stuby );
+    CvMat stuby, *vely = cvGetMat( velarry, &stuby );	//转化输入格式CvArr到CvMat
 
-    if( !CV_ARE_TYPES_EQ( srcA, srcB ))
+    /*if( !CV_ARE_TYPES_EQ( srcA, srcB ))
         CV_Error( CV_StsUnmatchedFormats, "Source images have different formats" );
 
     if( !CV_ARE_TYPES_EQ( velx, vely ))
@@ -522,12 +530,12 @@ adHS( const void* srcarrA, const void* srcarrB, int usePrevious,
                                            "destination images must have 32fC1 type" );
 
     if( srcA->step != srcB->step || velx->step != vely->step )
-        CV_Error( CV_BadStep, "source and destination images have different step" );
+        CV_Error( CV_BadStep, "source and destination images have different step" );*/
 
-    IPPI_CALL( icvCalcOpticalFlowHS_8u32fR( (uchar*)srcA->data.ptr, (uchar*)srcB->data.ptr,
+	IPPI_CALL(icvCalcOpticalFlowHS_8u32fR((uchar*)srcA->data.ptr, (uchar*)srcB->data.ptr, (uchar*)srcC->data.ptr, (uchar*)srcD->data.ptr, (uchar*)srcE->data.ptr,
                                             srcA->step, cvGetMatSize( srcA ), usePrevious,
                                             velx->data.fl, vely->data.fl,
-                                            velx->step, (float)lambda, criteria ));
+                                            velx->step, (float)lambda, alpha, criteria ));
 }
 
 /* End of file. */
