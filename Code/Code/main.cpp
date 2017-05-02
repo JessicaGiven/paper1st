@@ -25,7 +25,9 @@ exit(-1);
 int main()
 {
 	IplImage * frame = NULL;
-	int i, j, dx, dy, rows, cols, f;
+	IplImage * frame_buf[5] = { NULL };
+	int i, j, rows, cols;
+	float dx, dy, f;
 	IplImage *src_img1 = NULL, *src_img2 = NULL, *dst_img1 = NULL, *dst_img2 = NULL;
 	CvMat *velx, *vely, *sal_map;
 	CvTermCriteria criteria;
@@ -55,63 +57,66 @@ int main()
 	cvSetCaptureProperty(input_video, CV_CAP_PROP_POS_FRAMES, 0.); //单位为帧数的位置（只对视频文件有效
 
 	long current_frame = 0;
-	//进入循环
-	while (true)
+
+	cvSetCaptureProperty(input_video, CV_CAP_PROP_POS_FRAMES, current_frame);
+
+	for (i = 0; i < 5; i++)
 	{
-		cvSetCaptureProperty(input_video, CV_CAP_PROP_POS_FRAMES, current_frame);
 		frame = cvQueryFrame(input_video);
-		dst_img2 = (IplImage *)cvClone(frame);
-		if (frame == NULL)
+		frame_buf[i] = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);
+		cvCvtColor(frame, frame_buf[i], CV_BGR2GRAY);//cvCvtColor(src,des,CV_BGR2GRAY)
+	}
+
+	//进入循环
+	for (int frame_index = 0; frame_index < number_of_frames; frame_index++)
+	{
+		if (frame_index > 0)
 		{
-			/* Why did we get a NULL frame? We shouldn't be at the end. */
-			fprintf(stderr, "Error: Hmm. The end came sooner than we thought.\n");
-			return -1;
+			cvCopy(frame_buf[1], frame_buf[0]);
+			cvCopy(frame_buf[2], frame_buf[1]);
+			cvCopy(frame_buf[3], frame_buf[2]);
+			cvCopy(frame_buf[4], frame_buf[3]);
+			/*frame_buf[0] = frame_buf[1];
+			frame_buf[1] = frame_buf[2];
+			frame_buf[2] = frame_buf[3];
+			frame_buf[3] = frame_buf[4];
+			frame = cvCreateImage(cvGetSize(frame), IPL_DEPTH_32F, 1);*/
+			frame = cvQueryFrame(input_video);
+			cvCvtColor(frame, frame_buf[4], CV_BGR2GRAY);//cvCvtColor(src,des,CV_BGR2GRAY)
 		}
-		//allocateOnDemand( &frame1_1C, frame_size, IPL_DEPTH_8U, 1 );
-		//        cvConvertImage(frame, frame1_1C, CV_CVTIMG_SWAP_RB); 
-		IplImage* frame1_1C = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);//创建目标图像
-		cvCvtColor(frame, frame1_1C, CV_BGR2GRAY);//cvCvtColor(src,des,CV_BGR2GRAY)
-
-		//    cvCvtColor(frame,frame1_1C,CV_BGR2GRAY); 
-		//  frame1_1C=frame;
-
-		frame = cvQueryFrame(input_video);
-		if (frame == NULL)
-		{
-			fprintf(stderr, "Error: Hmm. The end came sooner than we thought.\n");
-			return -1;
-		}
-		IplImage* frame2_1C = cvCreateImage(cvGetSize(frame), IPL_DEPTH_8U, 1);//创建目标图像
-		cvCvtColor(frame, frame2_1C, CV_BGR2GRAY);//cvCvtColor(src,des,CV_BGR2GRAY)
-
-
-
-		cols = frame1_1C->width;
-		rows = frame1_1C->height;
+		dst_img2 = (IplImage *)cvClone(frame_buf[2]);
+		cols = frame_buf[0]->width;
+		rows = frame_buf[0]->height;
 		velx = cvCreateMat(rows, cols, CV_32FC1);
 		vely = cvCreateMat(rows, cols, CV_32FC1);
 		sal_map = cvCreateMat(rows, cols, CV_32FC1);
 		cvSetZero(velx);
 		cvSetZero(vely);
-		criteria = cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.1);
+		criteria = cvTermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 20, 0.1);
 
 		// (2)计算（HS）
-		adHS(frame1_1C, frame2_1C, 0, velx, vely, 100, criteria);
+		adHS(frame_buf[0], frame_buf[1], frame_buf[2], frame_buf[3], frame_buf[4], 0, velx, vely, 0.9, 100, criteria);
 		//（3） 画图
 
 		for (i = 0; i < cols; i++) {
-			for (j = 0; j < rows; j++) { 
-				dx = (int)cvGetReal2D(velx, j, i);
-				dy = (int)cvGetReal2D(vely, j, i);
-				f = sqrt(dx*dx  + dy*dy) / 10;
+			for (j = 0; j < rows; j++) {
+				dx = (float)cvGetReal2D(velx, j, i);
+				dy = (float)cvGetReal2D(vely, j, i);
+				f = sqrt(dx*dx + dy*dy) /100;
 				cvSet2D(sal_map, j, i, cvScalar(f));
 				/*if ((5<dx<10) && (5<dy<10))
 					cvLine(dst_img2, cvPoint(i, j), cvPoint(i + dx, j + dy), CV_RGB(255, 0, 0), 1, CV_AA, 0);*/
 			}
 		}
 
-		cvNamedWindow("ImageHS", 1);
-		cvShowImage("ImageHS", dst_img2);
+		cvNamedWindow("Image", 1);
+		cvShowImage("Image", frame);
+
+		cvNamedWindow("Image_test1", 1);
+		cvShowImage("Image_test1", frame_buf[3]);
+
+		cvNamedWindow("Image_test2", 1);
+		cvShowImage("Image_test2", frame_buf[4]);
 
 		cvNamedWindow("Sal_Map", 1);
 		cvShowImage("Sal_Map", sal_map);
@@ -124,9 +129,9 @@ int main()
 		/* Don't run past the front/end of the AVI. */
 		//if (current_frame < 0) current_frame = 0;
 		if (current_frame >= number_of_frames - 1) current_frame = number_of_frames - 2;
-
-
 	}
+
+	
 
 
 	cvDestroyWindow("ImageHS");

@@ -40,6 +40,9 @@
 //M*/
 #include <precomp.hpp>
 
+#include <cv.h>
+#include <highgui.h>
+
 #include "opencv2/legacy/legacy.hpp"
 
 #include "opencv2/core/internal.hpp"
@@ -53,6 +56,9 @@
 
 typedef struct
 {
+	float x;
+	float y;
+	float t;
     float xx;
     float xy;
     float yy;
@@ -92,11 +98,11 @@ icvDerProductEx;
 //
 //F*/
 static CvStatus CV_STDCALL
-icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
-                             uchar*  imgB,
-							 uchar*  imgC,
-							 uchar*  imgD,
-							 uchar*  imgE,
+icvCalcOpticalFlowadHS_8u32fR( uchar*  img1,
+                             uchar*  img2,
+							 uchar*  img3,
+							 uchar*  img4,
+							 uchar*  img5,
                              int     imgStep,
                              CvSize imgSize,
                              int     usePrevious,
@@ -104,7 +110,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
                              float*  velocityY,
                              int     velStep,
                              float   lambda,
-							 float   alpha,
+							 float   w,
                              CvTermCriteria criteria )
 {
     /* Loops indexes 循环索引 */ 
@@ -130,7 +136,7 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
     int Stop;
 
     /* buffers derivatives product 导数运算结果的缓冲区 */
-    icvDerProductEx *II[10];
+    icvDerProductEx *II[4];
 
     float *VelBufX[2];
     float *VelBufY[2];
@@ -146,10 +152,16 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
     int NoMem = 0;
 
     /* Checking bad arguments 检查错误 */
-    if( imgA == NULL )
+    if( img1 == NULL )
         return CV_NULLPTR_ERR;
-    if( imgB == NULL )
+    if( img2 == NULL )
         return CV_NULLPTR_ERR;
+	if (img3 == NULL)
+		return CV_NULLPTR_ERR;
+	if (img4 == NULL)
+		return CV_NULLPTR_ERR;
+	if (img5 == NULL)
+		return CV_NULLPTR_ERR;
 
     if( imgSize.width <= 0 )
         return CV_BADSIZE_ERR;
@@ -189,8 +201,12 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
 
     BufferSize = imageHeight * imageWidth;
 
-    II = (icvDerProductEx *) cvAlloc( BufferSize * sizeof( icvDerProductEx ));
-    if( II == NULL )
+    II[0] = (icvDerProductEx *) cvAlloc( BufferSize * sizeof( icvDerProductEx )); //I(3,1)
+	II[1] = (icvDerProductEx *) cvAlloc( BufferSize * sizeof( icvDerProductEx )); //I(3,2)
+	II[2] = (icvDerProductEx *) cvAlloc( BufferSize * sizeof( icvDerProductEx )); //I(3,4)
+	II[3] = (icvDerProductEx *) cvAlloc( BufferSize * sizeof( icvDerProductEx )); //I(3,5)
+
+	if ((II[0] == NULL) || (II[1] == NULL) || (II[2] == NULL) || (II[3] == NULL))
         NoMem = 1;
 
     if( NoMem )
@@ -209,125 +225,157 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
             if( VelBufY[k] )
                 cvFree( &VelBufY[k] );
         }
-        if( II )
-            cvFree( &II );
+		if (II[0] || II[1]|| II[2] || II[3])
+            cvFree( &II[0] );
         return CV_OUTOFMEM_ERR;
     }
 /****************************************************************************************\
 *         Calculate first line of memX and memY 计算 memX 和 memY 的第一行                *
 \****************************************************************************************/
-    MemY[0][0] = MemY[1][0] = CONV( imgA[0], imgA[0], imgA[1] );
-    MemX[0][0] = MemX[1][0] = CONV( imgA[0], imgA[0], imgA[imgStep] );
+    MemY[0][0] = MemY[1][0] = CONV( img3[0], img3[0], img3[1] );
+    MemX[0][0] = MemX[1][0] = CONV( img3[0], img3[0], img3[imgStep] );
 
     for( j = 1; j < imageWidth - 1; j++ )
     {
-        MemY[0][j] = MemY[1][j] = CONV( imgA[j - 1], imgA[j], imgA[j + 1] );
+        MemY[0][j] = MemY[1][j] = CONV( img3[j - 1], img3[j], img3[j + 1] );
     }
 
     pixNumber = imgStep;
     for( i = 1; i < imageHeight - 1; i++ )
     {
-        MemX[0][i] = MemX[1][i] = CONV( imgA[pixNumber - imgStep],
-                                        imgA[pixNumber], imgA[pixNumber + imgStep] );
+        MemX[0][i] = MemX[1][i] = CONV( img3[pixNumber - imgStep],
+                                        img3[pixNumber], img3[pixNumber + imgStep] );
         pixNumber += imgStep;
     }
 
     MemY[0][imageWidth - 1] =
-        MemY[1][imageWidth - 1] = CONV( imgA[imageWidth - 2],
-                                        imgA[imageWidth - 1], imgA[imageWidth - 1] );
+        MemY[1][imageWidth - 1] = CONV( img3[imageWidth - 2],
+                                        img3[imageWidth - 1], img3[imageWidth - 1] );
 
     MemX[0][imageHeight - 1] =
-        MemX[1][imageHeight - 1] = CONV( imgA[pixNumber - imgStep],
-                                         imgA[pixNumber], imgA[pixNumber] );
+        MemX[1][imageHeight - 1] = CONV( img3[pixNumber - imgStep],
+                                         img3[pixNumber], img3[pixNumber] );
 
 
 /****************************************************************************************\
 *     begin scan image, calc derivatives 开始遍历图像，计算导数                            *
 \****************************************************************************************/
+	uchar* imgA = img3;
+	uchar* imgB;
+	//imgB = (uchar *)cvAlloc((imgSize.width * imgSize.height) * sizeof(uchar));
 
-    ConvLine = 0;
-    Line2 = -imgStep;
-    address = 0;
-    LastLine = imgStep * (imageHeight - 1);
-    while( ConvLine < imageHeight )
-    {
-        /*Here we calculate derivatives for line of image */
-        int memYline = (ConvLine + 1) & 1;
+	for (i = 0; i < 4; i++)
+	{
+		switch (i)
+		{
+		case 0:
+			imgB = img1;
+			break;
+		case 1:
+			imgB = img2;
+			break;
+		case 2:
+			imgB = img4;
+			break;
+		case 3:
+			imgB = img5;
+			break;
+		default:
+			break;
+		}
+		ConvLine = 0;
+		Line2 = -imgStep;
+		address = 0;
+		LastLine = imgStep * (imageHeight - 1);
+		while (ConvLine < imageHeight)
+		{
+			/*Here we calculate derivatives for line of image */
+			int memYline = (ConvLine + 1) & 1;
 
-        Line2 += imgStep;
-        Line1 = Line2 - ((Line2 == 0) ? 0 : imgStep);
-        Line3 = Line2 + ((Line2 == LastLine) ? 0 : imgStep);
+			Line2 += imgStep;
+			Line1 = Line2 - ((Line2 == 0) ? 0 : imgStep);
+			Line3 = Line2 + ((Line2 == LastLine) ? 0 : imgStep);
 
-        /* Process first pixel */
-        ConvX = CONV( imgA[Line1 + 1], imgA[Line2 + 1], imgA[Line3 + 1] );
-        ConvY = CONV( imgA[Line3], imgA[Line3], imgA[Line3 + 1] );
+			/* Process first pixel */
+			ConvX = CONV(imgA[Line1 + 1], imgA[Line2 + 1], imgA[Line3 + 1]);
+			ConvY = CONV(imgA[Line3], imgA[Line3], imgA[Line3 + 1]);
 
-        GradY = (ConvY - MemY[memYline][0]) * 0.125f;
-        GradX = (ConvX - MemX[1][ConvLine]) * 0.125f;
+			GradY = (ConvY - MemY[memYline][0]) * 0.125f;
+			GradX = (ConvX - MemX[1][ConvLine]) * 0.125f;
 
-        MemY[memYline][0] = ConvY;
-        MemX[1][ConvLine] = ConvX;
+			MemY[memYline][0] = ConvY;
+			MemX[1][ConvLine] = ConvX;
 
-        GradT = (float) (imgB[Line2] - imgA[Line2]);
+			GradT = (float)(imgB[Line2] - imgA[Line2]);
 
-        II[address].xx = GradX * GradX;
-        II[address].xy = GradX * GradY;
-        II[address].yy = GradY * GradY;
-        II[address].xt = GradX * GradT;
-        II[address].yt = GradY * GradT;
+			II[i][address].x = GradX;
+			II[i][address].y = GradY;
+			II[i][address].t = GradT;
+			II[i][address].xx = GradX * GradX;
+			II[i][address].xy = GradX * GradY;
+			II[i][address].yy = GradY * GradY;
+			II[i][address].xt = GradX * GradT;
+			II[i][address].yt = GradY * GradT;
 
-        II[address].alpha = 1 / (Ilambda + II[address].xx + II[address].yy);
-        address++;
+			II[i][address].alpha = 1 / (Ilambda + II[i][address].xx + II[i][address].yy);
+			address++;
 
-        /* Process middle of line */
-        for( j = 1; j < imageWidth - 1; j++ )
-        {
-            ConvX = CONV( imgA[Line1 + j + 1], imgA[Line2 + j + 1], imgA[Line3 + j + 1] );
-            ConvY = CONV( imgA[Line3 + j - 1], imgA[Line3 + j], imgA[Line3 + j + 1] );
+			/* Process middle of line */
+			for (j = 1; j < imageWidth - 1; j++)
+			{
+				ConvX = CONV(imgA[Line1 + j + 1], imgA[Line2 + j + 1], imgA[Line3 + j + 1]);
+				ConvY = CONV(imgA[Line3 + j - 1], imgA[Line3 + j], imgA[Line3 + j + 1]);
 
-            GradY = (ConvY - MemY[memYline][j]) * 0.125f;
-            GradX = (ConvX - MemX[(j - 1) & 1][ConvLine]) * 0.125f;
+				GradY = (ConvY - MemY[memYline][j]) * 0.125f;
+				GradX = (ConvX - MemX[(j - 1) & 1][ConvLine]) * 0.125f;
 
-            MemY[memYline][j] = ConvY;
-            MemX[(j - 1) & 1][ConvLine] = ConvX;
+				MemY[memYline][j] = ConvY;
+				MemX[(j - 1) & 1][ConvLine] = ConvX;
 
-            GradT = (float) (imgB[Line2 + j] - imgA[Line2 + j]);
+				GradT = (float)(imgB[Line2 + j] - imgA[Line2 + j]);
 
-            II[address].xx = GradX * GradX;
-            II[address].xy = GradX * GradY;
-            II[address].yy = GradY * GradY;
-            II[address].xt = GradX * GradT;
-            II[address].yt = GradY * GradT;
+				II[i][address].x = GradX;
+				II[i][address].y = GradY;
+				II[i][address].t = GradT;
+				II[i][address].xx = GradX * GradX;
+				II[i][address].xy = GradX * GradY;
+				II[i][address].yy = GradY * GradY;
+				II[i][address].xt = GradX * GradT;
+				II[i][address].yt = GradY * GradT;
 
-            II[address].alpha = 1 / (Ilambda + II[address].xx + II[address].yy);
-            address++;
-        }
-        /* Process last pixel of line */
-        ConvX = CONV( imgA[Line1 + imageWidth - 1], imgA[Line2 + imageWidth - 1],
-                      imgA[Line3 + imageWidth - 1] );
+				II[i][address].alpha = 1 / (Ilambda + II[i][address].xx + II[i][address].yy);
+				address++;
+			}
+			/* Process last pixel of line */
+			ConvX = CONV(imgA[Line1 + imageWidth - 1], imgA[Line2 + imageWidth - 1],
+				imgA[Line3 + imageWidth - 1]);
 
-        ConvY = CONV( imgA[Line3 + imageWidth - 2], imgA[Line3 + imageWidth - 1],
-                      imgA[Line3 + imageWidth - 1] );
+			ConvY = CONV(imgA[Line3 + imageWidth - 2], imgA[Line3 + imageWidth - 1],
+				imgA[Line3 + imageWidth - 1]);
 
 
-        GradY = (ConvY - MemY[memYline][imageWidth - 1]) * 0.125f;
-        GradX = (ConvX - MemX[(imageWidth - 2) & 1][ConvLine]) * 0.125f;
+			GradY = (ConvY - MemY[memYline][imageWidth - 1]) * 0.125f;
+			GradX = (ConvX - MemX[(imageWidth - 2) & 1][ConvLine]) * 0.125f;
 
-        MemY[memYline][imageWidth - 1] = ConvY;
+			MemY[memYline][imageWidth - 1] = ConvY;
 
-        GradT = (float) (imgB[Line2 + imageWidth - 1] - imgA[Line2 + imageWidth - 1]);
+			GradT = (float)(imgB[Line2 + imageWidth - 1] - imgA[Line2 + imageWidth - 1]);
 
-        II[address].xx = GradX * GradX;
-        II[address].xy = GradX * GradY;
-        II[address].yy = GradY * GradY;
-        II[address].xt = GradX * GradT;
-        II[address].yt = GradY * GradT;
+			II[i][address].x = GradX;
+			II[i][address].y = GradY;
+			II[i][address].t = GradT;
+			II[i][address].xx = GradX * GradX;
+			II[i][address].xy = GradX * GradY;
+			II[i][address].yy = GradY * GradY;
+			II[i][address].xt = GradX * GradT;
+			II[i][address].yt = GradY * GradT;
 
-        II[address].alpha = 1 / (Ilambda + II[address].xx + II[address].yy);
-        address++;
+			II[i][address].alpha = 1 / (Ilambda + II[i][address].xx + II[i][address].yy);
+			address++;
 
-        ConvLine++;
-    }
+			ConvLine++;
+		}
+	}
 /****************************************************************************************\
 *      Prepare initial approximation  准备初始的近似值                                    *
 \****************************************************************************************/
@@ -379,14 +427,32 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
             averageY = (velocityY[Line2] +
                         velocityY[Line2 + 1] + velocityY[Line1] + velocityY[Line3]) / 4;
 
-            VelBufX[i & 1][0] = averageX -
-                (II[address].xx * averageX +
-                 II[address].xy * averageY + II[address].xt) * II[address].alpha;
+            /*VelBufX[i & 1][0] = averageX -
+                (II[2][address].xx * averageX +
+				II[2][address].xy * averageY + II[2][address].xt) * II[2][address].alpha;
 
             VelBufY[i & 1][0] = averageY -
-                (II[address].xy * averageX +
-                 II[address].yy * averageY + II[address].yt) * II[address].alpha;
+				(II[2][address].xy * averageX +
+				II[2][address].yy * averageY + II[2][address].yt) * II[2][address].alpha;*/
 
+			VelBufX[i & 1][0] = averageX -
+				(w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) *
+				(((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * averageX) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * averageY) +
+				(w * (II[1][address].t + II[2][address].t) + w*w * (II[0][address].t + II[3][address].t))) /
+				((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * (w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * (w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y))) +
+				Ilambda);
+
+			VelBufY[i & 1][0] = averageY -
+				(w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) *
+				(((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * averageX) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * averageY) +
+				(w * (II[1][address].t + II[2][address].t) + w*w * (II[0][address].t + II[3][address].t))) /
+				((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * (w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * (w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y))) +
+				Ilambda);
+				
             /* update Epsilon */
             if( criteria.type & CV_TERMCRIT_EPS )
             {
@@ -406,13 +472,32 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
                             velocityY[Line2 + j + 1] +
                             velocityY[Line1 + j] + velocityY[Line3 + j]) / 4;
 
-                VelBufX[i & 1][j] = averageX -
-                    (II[address].xx * averageX +
-                     II[address].xy * averageY + II[address].xt) * II[address].alpha;
+                /*VelBufX[i & 1][j] = averageX -
+					(II[2][address].xx * averageX +
+					II[2][address].xy * averageY + II[2][address].xt) * II[2][address].alpha;
 
                 VelBufY[i & 1][j] = averageY -
-                    (II[address].xy * averageX +
-                     II[address].yy * averageY + II[address].yt) * II[address].alpha;
+					(II[2][address].xy * averageX +
+					II[2][address].yy * averageY + II[2][address].yt) * II[2][address].alpha;*/
+
+				VelBufX[i & 1][0] = averageX -
+					(w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) *
+					(((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * averageX) +
+					((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * averageY) +
+					(w * (II[1][address].t + II[2][address].t) + w*w * (II[0][address].t + II[3][address].t))) /
+					((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * (w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) +
+					((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * (w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y))) +
+					Ilambda);
+
+				VelBufY[i & 1][0] = averageY -
+					(w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) *
+					(((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * averageX) +
+					((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * averageY) +
+					(w * (II[1][address].t + II[2][address].t) + w*w * (II[0][address].t + II[3][address].t))) /
+					((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * (w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) +
+					((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * (w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y))) +
+					Ilambda);
+
                 /* update Epsilon */
                 if( criteria.type & CV_TERMCRIT_EPS )
                 {
@@ -435,13 +520,31 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
                         velocityY[Line3 + imageWidth - 1]) / 4;
 
 
-            VelBufX[i & 1][imageWidth - 1] = averageX -
-                (II[address].xx * averageX +
-                 II[address].xy * averageY + II[address].xt) * II[address].alpha;
+            /*VelBufX[i & 1][imageWidth - 1] = averageX -
+				(II[2][address].xx * averageX +
+				II[2][address].xy * averageY + II[2][address].xt) * II[2][address].alpha;
 
             VelBufY[i & 1][imageWidth - 1] = averageY -
-                (II[address].xy * averageX +
-                 II[address].yy * averageY + II[address].yt) * II[address].alpha;
+				(II[2][address].xy * averageX +
+				II[2][address].yy * averageY + II[2][address].yt) * II[2][address].alpha;*/
+
+			VelBufX[i & 1][0] = averageX -
+				(w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) *
+				(((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * averageX) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * averageY) +
+				(w * (II[1][address].t + II[2][address].t) + w*w * (II[0][address].t + II[3][address].t))) /
+				((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * (w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * (w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y))) +
+				Ilambda);
+
+			VelBufY[i & 1][0] = averageY -
+				(w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) *
+				(((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * averageX) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * averageY) +
+				(w * (II[1][address].t + II[2][address].t) + w*w * (II[0][address].t + II[3][address].t))) /
+				((w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) * (w * (II[1][address].x + II[2][address].x) + 2 * w*w * (II[0][address].x + II[3][address].x)) +
+				((w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y)) * (w * (II[1][address].y + II[2][address].y) + 2 * w*w * (II[0][address].y + II[3][address].y))) +
+				Ilambda);
 
             /* update Epsilon */
             if( criteria.type & CV_TERMCRIT_EPS )
@@ -452,6 +555,8 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
                 tmp = (float)fabs(velocityY[Line2 + imageWidth - 1] -
                                   VelBufY[i & 1][imageWidth - 1]);
                 Eps = MAX( tmp, Eps );
+
+				printf("Eps = %f\n", Eps);
             }
             address++;
 
@@ -482,7 +587,10 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
         cvFree( &VelBufX[k] );
         cvFree( &VelBufY[k] );
     }
-    cvFree( &II );
+    cvFree( &II[0] );
+	cvFree( &II[1] );
+	cvFree( &II[2] );
+	cvFree( &II[3] );
 
     return CV_OK;
 } /*icvCalcOpticalFlowHS_8u32fR*/
@@ -493,49 +601,55 @@ icvCalcOpticalFlowHS_8u32fR( uchar*  imgA,
 //    Purpose: Optical flow implementation
 //    Context:
 //    Parameters:
-//             srcA, srcB - source image
+//             src1, src2 - source image
 //             velx, vely - destination image
 //    Returns:
 //
 //    Notes:
 //F*/
 CV_IMPL void
-adHS(const void* srcarrA, const void* srcarrB, const void* srcarrC, const void* srcarrD, const void* srcarrE, int usePrevious,
+adHS(const void* srcarr1, const void* srcarr2, const void* srcarr3, const void* srcarr4, const void* srcarr5, int usePrevious,
                      void* velarrx, void* velarry,
-					 float alpha, 
+					 float w, 
                      double lambda, CvTermCriteria criteria )
 {
-    CvMat stubA, *srcA = cvGetMat( srcarrA, &stubA );
-    CvMat stubB, *srcB = cvGetMat( srcarrB, &stubB );
-	CvMat stubC, *srcC = cvGetMat( srcarrC, &stubC );
-	CvMat stubD, *srcD = cvGetMat( srcarrD, &stubD );
-	CvMat stubE, *srcE = cvGetMat( srcarrE, &stubE );
+    CvMat stub1, *src1 = cvGetMat( srcarr1, &stub1 );
+    CvMat stub2, *src2 = cvGetMat( srcarr2, &stub2 );
+	CvMat stub3, *src3 = cvGetMat( srcarr3, &stub3 );
+	CvMat stub4, *src4 = cvGetMat( srcarr4, &stub4 );
+	CvMat stub5, *src5 = cvGetMat( srcarr5, &stub5 );
     CvMat stubx, *velx = cvGetMat( velarrx, &stubx );
     CvMat stuby, *vely = cvGetMat( velarry, &stuby );	//转化输入格式CvArr到CvMat
 
-    /*if( !CV_ARE_TYPES_EQ( srcA, srcB ))
+	/*cvNamedWindow("Image_test4", 1);
+	cvShowImage("Image_test4", srcarr4);
+
+	cvNamedWindow("Image_test3", 1);
+	cvShowImage("Image_test3", srcarr3);*/
+
+    /*if( !CV_ARE_TYPES_EQ( src1, src2u ))
         CV_Error( CV_StsUnmatchedFormats, "Source images have different formats" );
 
     if( !CV_ARE_TYPES_EQ( velx, vely ))
         CV_Error( CV_StsUnmatchedFormats, "Destination images have different formats" );
 
-    if( !CV_ARE_SIZES_EQ( srcA, srcB ) ||
+    if( !CV_ARE_SIZES_EQ( src1, src2 ) ||
         !CV_ARE_SIZES_EQ( velx, vely ) ||
-        !CV_ARE_SIZES_EQ( srcA, velx ))
+        !CV_ARE_SIZES_EQ( src1, velx ))
         CV_Error( CV_StsUnmatchedSizes, "" );
 
-    if( CV_MAT_TYPE( srcA->type ) != CV_8UC1 ||
+    if( CV_MAT_TYPE( src1->type ) != CV_8UC1 ||
         CV_MAT_TYPE( velx->type ) != CV_32FC1 )
         CV_Error( CV_StsUnsupportedFormat, "Source images must have 8uC1 type and "
                                            "destination images must have 32fC1 type" );
 
-    if( srcA->step != srcB->step || velx->step != vely->step )
+    if( src1->step != src2->step || velx->step != vely->step )
         CV_Error( CV_BadStep, "source and destination images have different step" );*/
 
-	IPPI_CALL(icvCalcOpticalFlowHS_8u32fR((uchar*)srcA->data.ptr, (uchar*)srcB->data.ptr, (uchar*)srcC->data.ptr, (uchar*)srcD->data.ptr, (uchar*)srcE->data.ptr,
-                                            srcA->step, cvGetMatSize( srcA ), usePrevious,
+	IPPI_CALL(icvCalcOpticalFlowadHS_8u32fR((uchar*)src1->data.ptr, (uchar*)src2->data.ptr, (uchar*)src3->data.ptr, (uchar*)src4->data.ptr, (uchar*)src5->data.ptr,
+                                            src1->step, cvGetMatSize( src1 ), usePrevious,
                                             velx->data.fl, vely->data.fl,
-                                            velx->step, (float)lambda, alpha, criteria ));
+                                            velx->step, (float)lambda, w, criteria ));
 }
 
 /* End of file. */

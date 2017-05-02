@@ -8,8 +8,9 @@
 #include "opencv2/ml/ml.hpp"
 
 
-CVAPI(void)  adHS(const CvArr* prev, const CvArr* curr,
+CVAPI(void)  adHS(const CvArr* frame1, const CvArr* frame2, const CvArr* frame3, const CvArr* frame4, const CvArr* frame5,
 	int use_previous, CvArr* velx, CvArr* vely,
+	float w,
 	double lambda, CvTermCriteria criteria);
 
 
