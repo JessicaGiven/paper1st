@@ -22,9 +22,9 @@ Mat computeSalMap(Mat *flow, Mat gray)
 				{
 					f1 = flow[fi].ptr<float>(i, j)[0];
 					f2 = flow[fi].ptr<float>(i, j)[1];
-					f3[fi] = sqrt(f1*f1 * 100 + f2*f2 * 100) / 255;
+					f3[fi] = /*sqrt*/(f1*f1 * 100 + f2*f2 * 100) / 255;
 				}
-				temp = 0.2 * f3[0] + 0.8 * f3[1] + 0.8 * f3[2] + 0.2 * f3[3] + 0.1 * f3[4];
+				temp = 0.5 * f3[0] + 0.8 * f3[1] + 1 * f3[2] + 0.8 * f3[3] + 0.5 * f3[4];
 				if (f4 < temp) f4 = temp;
 				result.at<float>(i, j) = temp;
 			}
@@ -36,18 +36,20 @@ Mat computeSalMap(Mat *flow, Mat gray)
 
 int main(int, char**)
 {
-	VideoCapture cap;
+	//VideoCapture cap;
 	//cap.open(0);
-	cap.open("test1.mp4");
+	//cap.open("test1.mp4");
 
-	if (!cap.isOpened())
-		return -1;
+	//if (!cap.isOpened())
+		//return -1;
+	string first_file = "C:\\master\\dataset\\Toy\\Toy\\img//%04d.jpg";
+	VideoCapture sequence(first_file);
 
 	Mat prevgray, gray, flow[5], cflow, frame[6], frame_buf;
 	//namedWindow("flow", 1);
 	for (int i = 0; i < 6; i++)
 	{
-		cap >> frame_buf;
+		/*cap*/ sequence >> frame_buf;
 		cvtColor(frame_buf, frame[i], CV_BGR2GRAY);
 	}
 	bool first = 1;
@@ -60,7 +62,7 @@ int main(int, char**)
 			frame[2] = frame[3].clone();
 			frame[3] = frame[4].clone();
 			frame[4] = frame[5].clone();
-			cap >> frame_buf;
+			/*cap*/sequence >> frame_buf;
 			cvtColor(frame_buf, frame[5], CV_BGR2GRAY);
 		}
 
