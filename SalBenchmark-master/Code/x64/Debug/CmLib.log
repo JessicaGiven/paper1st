@@ -1,0 +1,78 @@
+﻿Build started 2017/5/8 20:36:23.
+     1>Project "F:\git\paper1st\SalBenchmark-master\Code\CmLib\CmLib.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.pch" /Fo"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\\" /Fd"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.pch" /Fo"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\\" /Fd"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Basic\CmCv.cpp Basic\CmDefinition.cpp Basic\CmFile.cpp Cluster\CmAPCluster.cpp Cluster\CmColorQua.cpp Cluster\CmGMM.cpp Illustration\CmEvaluation.cpp Illustration\CmIllu.cpp Illustration\CmShow.cpp OtherAlg\CmCurveEx.cpp Saliency\CmSalCut.cpp Saliency\CmSaliencyGC.cpp Saliency\CmSaliencyRC.cpp "Segmentation\EfficientGraphBased\segment-image.cpp" Segmentation\MeanShift\ms.cpp Segmentation\MeanShift\msImageProcessor.cpp Segmentation\MeanShift\msSys.cpp Segmentation\MeanShift\msSysPrompt.cpp Segmentation\MeanShift\RAList.cpp Segmentation\MeanShift\rlist.cpp
+         rlist.cpp
+         RAList.cpp
+         msSysPrompt.cpp
+         msSys.cpp
+         msImageProcessor.cpp
+         ms.cpp
+         segment-image.cpp
+         CmSaliencyRC.cpp
+         CmSaliencyGC.cpp
+         CmSalCut.cpp
+         CmCurveEx.cpp
+         CmShow.cpp
+         CmIllu.cpp
+         CmEvaluation.cpp
+         CmGMM.cpp
+         CmColorQua.cpp
+         CmAPCluster.cpp
+         CmFile.cpp
+         CmDefinition.cpp
+         CmCv.cpp
+         Generating Code...
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\\" /Fd"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Segmentation\PlanarCut\code\CGraph.cpp Segmentation\PlanarCut\code\CutGrid.cpp Segmentation\PlanarCut\code\CutPlanar.cpp Segmentation\PlanarCut\code\CutSegment.cpp Segmentation\PlanarCut\code\CutShape.cpp Segmentation\PlanarCut\code\DynPath.cpp Segmentation\PlanarCut\code\Planar.cpp Segmentation\PlanarCut\code\PlanarException.cpp
+         PlanarException.cpp
+         Planar.cpp
+         DynPath.cpp
+         CutShape.cpp
+         CutSegment.cpp
+         CutPlanar.cpp
+         CutGrid.cpp
+         CGraph.cpp
+         Generating Code...
+       Lib:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.lib" /NOLOGO /MACHINE:X64 "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmCv.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmDefinition.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmFile.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmAPCluster.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmColorQua.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmGMM.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmEvaluation.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmIllu.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmShow.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmCurveEx.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmSalCut.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmSaliencyGC.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmSaliencyRC.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\segment-image.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\ms.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\msImageProcessor.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\msSys.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\msSysPrompt.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\RAList.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\rlist.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CGraph.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CutGrid.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CutPlanar.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CutSegment.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CutShape.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\DynPath.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\Planar.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\PlanarException.obj"
+         "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\stdafx.obj"
+         CmLib.vcxproj -> F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.lib
+       PostBuildEvent:
+         xcopy /y F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.lib ..\..\Lib\
+         :VCEnd
+         F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.lib
+         复制了 1 个文件
+     1>Done Building Project "F:\git\paper1st\SalBenchmark-master\Code\CmLib\CmLib.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:08.68
