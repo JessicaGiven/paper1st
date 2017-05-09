@@ -1,0 +1,30 @@
+﻿Build started 2017/5/9 9:16:42.
+     1>Project "C:\master\论文1\daima\对比算法\SalientRegionDetector\SalientRegionDetector\SalientRegionDetector\SalientRegionDetector.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\chan_software\vs2013\ultimate\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yc"stdafx.h" /Fp"x64\Release\SalientRegionDetector.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt stdafx.cpp
+         stdafx.cpp
+         C:\chan_software\vs2013\ultimate\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D _WINDOWS /D NDEBUG /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"x64\Release\SalientRegionDetector.pch" /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt PictureHandler.cpp Saliency.cpp SalientRegionDetector.cpp SalientRegionDetectorDlg.cpp
+         PictureHandler.cpp
+     1>PictureHandler.cpp(237): warning C4996: '_splitpath': This function or variable may be unsafe. Consider using _splitpath_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\chan_software\vs2013\ultimate\VC\include\stdlib.h(854) : see declaration of '_splitpath'
+         Saliency.cpp
+         SalientRegionDetector.cpp
+         SalientRegionDetectorDlg.cpp
+     1>SalientRegionDetectorDlg.cpp(169): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+       ResourceCompile:
+         C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe /D NDEBUG /D _UNICODE /D UNICODE /l"0x0409" /Ix64\Release\ /nologo /fo"x64\Release\SalientRegionDetector.res" SalientRegionDetector.rc 
+       Link:
+         C:\chan_software\vs2013\ultimate\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\master\论文1\daima\对比算法\SalientRegionDetector\SalientRegionDetector\x64\Release\SalientRegionDetector.exe" /INCREMENTAL:NO /NOLOGO opencv_calib3d2411d.lib opencv_contrib2411d.lib opencv_core2411d.lib opencv_features2d2411d.lib opencv_flann2411d.lib opencv_gpu2411d.lib opencv_highgui2411d.lib opencv_imgproc2411d.lib opencv_legacy2411d.lib opencv_ml2411d.lib opencv_nonfree2411d.lib opencv_objdetect2411d.lib opencv_ocl2411d.lib opencv_photo2411d.lib opencv_stitching2411d.lib opencv_superres2411d.lib opencv_ts2411d.lib opencv_video2411d.lib opencv_videostab2411d.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /manifestinput:C:\chan_software\vs2013\ultimate\VC\Include\Manifest\dpiaware.manifest /DEBUG /PDB:"C:\master\论文1\daima\对比算法\SalientRegionDetector\SalientRegionDetector\x64\Release\SalientRegionDetector.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /ENTRY:"wWinMainCRTStartup" /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\master\论文1\daima\对比算法\SalientRegionDetector\SalientRegionDetector\x64\Release\SalientRegionDetector.lib" /MACHINE:X64 x64\Release\SalientRegionDetector.res
+         x64\Release\PictureHandler.obj
+         x64\Release\Saliency.obj
+         x64\Release\SalientRegionDetector.obj
+         x64\Release\SalientRegionDetectorDlg.obj
+         x64\Release\stdafx.obj
+         Generating code
+         Finished generating code
+         SalientRegionDetector.vcxproj -> C:\master\论文1\daima\对比算法\SalientRegionDetector\SalientRegionDetector\x64\Release\SalientRegionDetector.exe
+     1>Done Building Project "C:\master\论文1\daima\对比算法\SalientRegionDetector\SalientRegionDetector\SalientRegionDetector\SalientRegionDetector.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:12.79
