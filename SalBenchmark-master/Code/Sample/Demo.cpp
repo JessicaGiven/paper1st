@@ -22,7 +22,7 @@ int _tmain(int argc, _TCHAR* argv[])
 //	"AC", be caution with AC, which might results in many pop up windows , 
 //	if you want to try, you can put it into _exeNames[].
 	const char* _exeNames[] = { "FT", "GC", "HC", "RC", "GMR", "GU", "MSS" };
-	const char* _dbNames[] = { "DataSet1", "DataSet2" }; 
+	const char* _dbNames[] = { "DataSet3" };  //{ "DataSet1", "DataSet2" }; 
 
 	vecS dbNames = charPointers2StrVec(_dbNames);
 	vecS exeNames = charPointers2StrVec(_exeNames);

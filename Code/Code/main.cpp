@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <tchar.h>
 
+#include <sstream>
+
 using namespace cv;
 using namespace std;
 
@@ -173,6 +175,14 @@ void methodFU(string dir_path)
 
 		Mat sal_all = (mean / max) * salRC + (1 - (mean / max)) * salOF; // 动态加权融合
 
+		string str;
+		stringstream stream;
+		stream << i - 5;
+		stream >> str;
+
+		string sal_dir = "F:/git/paper1st/SalBenchmark-master/Data/DataSet3/";
+		imwrite(sal_dir + "Saliency/0000000" + str + "_OURS.png", sal_all * 255);
+
 		imshow("original", temp);
 		imshow("Sal_Map_OF", salOF);
 		imshow("Sal_Map_RC", salRC);
@@ -187,12 +197,12 @@ void methodFU(string dir_path)
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	cout << "Please choose mode: (0)OF (1)RC (2)Fusion  " << endl;	// 模式选择 (0)光流 (1)RC (2)前两种方法结合
 	int mode = 0;
 	cin >> mode;
-	string db_dir = "D:/buffer/vot2014/ball/";
+	string db_dir = "F:/git/paper1st/SalBenchmark-master/Data/DataSet3/ImgsOurs/";
 	switch (mode)
 	{
 	case 0:
