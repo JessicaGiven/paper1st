@@ -16,12 +16,12 @@ int _tmain(int argc, _TCHAR* argv[])
 // "AC", "FT", "GC", "HC", "RC", "GMR", "GU", "MSS"  is exe.
 // "PCA", "SWD" is Matlab Code, you can run them in  "./Code/matlab/RunAll.m"
 	const char* _methodNames[] = {
-		"FT", "GC", "HC", "RC", "GMR", "GU", "MSS", "PCA", "SWD" 
-	};
+		"OURS","FT", "GC", "HC", "RC", "GMR", "GU", "MSS", "PCA", "SWD" 
+	}; 
 //	const char* _exeNames[] = { "AC", "FT", "GC", "HC", "RC", "GMR", "GU", "MSS" }; 
 //	"AC", be caution with AC, which might results in many pop up windows , 
 //	if you want to try, you can put it into _exeNames[].
-	const char* _exeNames[] = { "FT", "GC", "HC", "RC", "GMR", "GU", "MSS" };
+	const char* _exeNames[] = { "OURS", "FT", "GC", "HC", "RC", "GMR", "GU", "MSS" };
 	const char* _dbNames[] = { "DataSet3" };  //{ "DataSet1", "DataSet2" }; 
 
 	vecS dbNames = charPointers2StrVec(_dbNames);
@@ -38,7 +38,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		string wkDir = rootDir + dbNames[i] + "/";
 		string imgNameW = wkDir + "/Imgs/*.jpg", gtImgW = wkDir + "/Imgs/*.png";
 		string resultFileName = wkDir + dbNames[i] + "PrRocAuc.m";
-		string salDir = wkDir + "/Saliency/", cutDir = wkDir + "SalCut/";
+		string salDir = wkDir + "Saliency/", cutDir = wkDir + "SalCut/";
 		if (!CmFile::FolderExist(salDir)){
 			CmFile::MkDir(salDir);	
 			CmFile::MkDir(cutDir);

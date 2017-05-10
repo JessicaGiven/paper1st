@@ -104,7 +104,7 @@ void methodRC(string dir_path)
 	vector<string> fileNames = dir.GetListFiles(dir_path, "*.jpg", false);
 
 	for (int i = 0; i < fileNames.size(); i++)
-	{
+	{ 
 		string fileName = fileNames[i];
 		string fileFullName = dir_path + fileName;
 		cout << "file name:" << fileName << endl;
