@@ -64,6 +64,10 @@ function [  ] = GetSal(WkDir, ImgNameNE, MethodName)
             sMap = GetCHM(fileName);
         case 'RBD'
             sMap = GetRBD(fileName);
+        case 'GBVS'
+            sMap = GetGBVS(fileName);
+        case 'SSEG'
+            sMap = GetSSEG(fileName);
         otherwise
             warning('Unexpected type. No plot created.');
     end
