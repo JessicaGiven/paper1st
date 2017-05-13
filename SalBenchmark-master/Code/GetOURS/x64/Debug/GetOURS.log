@@ -1,18 +1,9 @@
-﻿Build started 2017/5/10 11:08:06.
-     1>Project "F:\git\paper1st\SalBenchmark-master\Code\GetOURS\GetOURS.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt GetOURS.cpp
-         GetOURS.cpp
-     1>GetOURS.cpp(34): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>GetOURS.cpp(48): warning C4101: 'dir' : unreferenced local variable
-     1>GetOURS.cpp(103): warning C4101: 'dir' : unreferenced local variable
-     1>GetOURS.cpp(130): warning C4101: 'dir' : unreferenced local variable
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\GetOURS.exe" /INCREMENTAL /NOLOGO opencv_calib3d2411d.lib opencv_contrib2411d.lib opencv_core2411d.lib opencv_features2d2411d.lib opencv_flann2411d.lib opencv_gpu2411d.lib opencv_highgui2411d.lib opencv_imgproc2411d.lib opencv_legacy2411d.lib opencv_ml2411d.lib opencv_nonfree2411d.lib opencv_objdetect2411d.lib opencv_ocl2411d.lib opencv_photo2411d.lib opencv_stitching2411d.lib opencv_superres2411d.lib opencv_ts2411d.lib opencv_video2411d.lib opencv_videostab2411d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\GetOURS.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\GetOURS.lib" /MACHINE:X64 x64\Debug\GetOURS.obj
-         x64\Debug\stdafx.obj
+﻿Build started 2017/5/12 10:44:09.
+     1>Project "F:\git\paper1st\SalBenchmark-master\Code\GetOURS\GetOURS.vcxproj" on node 3 (Build target(s)).
+     1>Link:
          GetOURS.vcxproj -> F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\GetOURS.exe
      1>Done Building Project "F:\git\paper1st\SalBenchmark-master\Code\GetOURS\GetOURS.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:02.19
+Time Elapsed 00:00:00.37

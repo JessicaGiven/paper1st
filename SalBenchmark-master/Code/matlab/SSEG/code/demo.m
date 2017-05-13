@@ -47,12 +47,13 @@ videoNUM = length(videoFiles)-2;
 for videonum = 1:videoNUM
     videofolder =  videoFiles(videonum+2).name;
     
-    if( options.vocal )
-       disp( ['Processing:', videoFiles(videonum+2).name]);
-    end
+     if( options.vocal )
+        disp( ['Processing:', videoFiles(videonum+2).name]);
+     end
     
     options.infolder = fullfile( foldername, 'data', 'inputs',videofolder );
     options.outfolder = fullfile( foldername, 'data', 'outputs', videofolder );
     %Getting final saliency results
     sal{videonum} = computeSaliency(options);
 end
+

@@ -65,15 +65,15 @@ function [  ] = GetSal(WkDir, ImgNameNE, MethodName)
         case 'RBD'
             sMap = GetRBD(fileName);
         case 'GBVS'
-            sMap = GetGBVS(fileName);
+            GetGBVS(fileName);
         case 'SSEG'
-            sMap = GetSSEG(fileName);
+            GetSSEG(fileName);
         otherwise
             warning('Unexpected type. No plot created.');
     end
     
     %imwrite(mat2gray(sMap), outName); 
-    imwrite(sMap, outName);                 
+    %imwrite(sMap, outName);                 
 end
 
 function [SalMap] = GetSWD(imgName)
@@ -124,4 +124,16 @@ function [SalMap] = GetIT(fileName)
         SalMap = makeSaliencyMap(imgStruct,myParams);
         SalMap = imresize(SalMap.data, imgSize);
     end
+end
+
+function GetGBVS(fileName)
+    addpath('F:\git\paper1st\SalBenchmark-master\Code\matlab\GBVS');
+    addpath('F:\git\paper1st\SalBenchmark-master\Code\matlab\GBVS\demo');
+    gbvs_install;
+    flicker_motion_demo;
+end
+
+function GetSSEG(fileName)
+    addpath('F:\git\paper1st\SalBenchmark-master\Code\matlab\SSEG\code');
+    demo;
 end
