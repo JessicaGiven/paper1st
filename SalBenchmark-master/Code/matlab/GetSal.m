@@ -68,6 +68,10 @@ function [  ] = GetSal(WkDir, ImgNameNE, MethodName)
             GetGBVS(fileName);
         case 'SSEG'
             GetSSEG(fileName);
+        case 'FOGR'
+            GetFOGR(fileName);
+        case 'PQFT'
+            GetPQFT(fileName);
         otherwise
             warning('Unexpected type. No plot created.');
     end
@@ -136,4 +140,14 @@ end
 function GetSSEG(fileName)
     addpath('F:\git\paper1st\SalBenchmark-master\Code\matlab\SSEG\code');
     demo;
+end
+
+function GetFOGR(fileName)
+    addpath('F:\git\paper1st\SalBenchmark-master\Code\matlab\FOGR\');
+    demo_fogr;
+end
+
+function GetPQFT(fileName)
+    addpath('F:\git\paper1st\SalBenchmark-master\Code\matlab\PQFT\');
+    main;
 end

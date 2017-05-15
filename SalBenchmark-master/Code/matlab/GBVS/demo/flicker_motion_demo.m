@@ -1,7 +1,7 @@
 
 % some video sequence
 i = 1;
-for imgi = 0 : 5
+for imgi = 0 : 4
     fname{i} = sprintf('F:/git/paper1st/SalBenchmark-master/Data/DataSet3/ImgsGBVS/%08d.jpg',imgi);
     i = i + 1;
 end
@@ -18,7 +18,7 @@ for i = 1 : N
     [out{i} motinfo] = gbvs( fname{i}, param , motinfo );
 end
 ii = 1;
-for oimg=0:5
+for oimg=0:4
     ofname{ii} = sprintf('F:/git/paper1st/SalBenchmark-master/Data/DataSet3/Saliency/%08d_GBVS.png',oimg);
     imwrite(out{ii}.master_map_resized, ofname{ii});
     ii = ii + 1;

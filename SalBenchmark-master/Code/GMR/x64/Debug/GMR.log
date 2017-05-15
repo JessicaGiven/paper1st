@@ -1,5 +1,5 @@
-﻿Build started 2017/5/12 10:44:12.
-     1>Project "F:\git\paper1st\SalBenchmark-master\Code\GMR\GMR.vcxproj" on node 3 (Build target(s)).
+﻿Build started 2017/5/14 18:30:25.
+     1>Project "F:\git\paper1st\SalBenchmark-master\Code\GMR\GMR.vcxproj" on node 7 (Build target(s)).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1193,5): warning MSB8012: TargetPath(F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\GMR.exe) does not match the Linker's OutputFile property value (F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\GetGMR.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(1195,5): warning MSB8012: TargetName(GMR) does not match the Linker's OutputFile property value (GetGMR). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
      1>Link:
@@ -8,4 +8,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.07
+Time Elapsed 00:00:00.27

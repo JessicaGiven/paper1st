@@ -1,0 +1,16 @@
+function out = detection( imbw ,I )
+%ssM表示显著图，IM2表示原始图像
+    [m,n]=size(imbw);
+    for i=2:mm
+        for j=2:men_n-1
+             Matrix=get3m3(ssM,[i j]);
+             avg=sum(Matrix(:));
+             if avg>2 && avg<9
+                 Image(i,j,:)=255;
+             end
+        end
+    end
+    out=IM2;
+
+end
+

@@ -32,7 +32,7 @@ function RunDatasets( SubNames, MethodNames, RootDir)
             
             % Using parfor can get results for the whole dataset faster, 
             % but we ignor it in the default setting to be more fair
-            parfor fileID = 1:fileNum  %% for each image file. 
+            for fileID = 1:fileNum  %% for each image file. 
                 fprintf('%d/%d: ', fileID, length(imgFiles));    
                 GetSal(WkDir, imgFiles{fileID}(1:end-4), MethodNames{methodID});
             end
