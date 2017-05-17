@@ -101,7 +101,7 @@ void methodOF(string dir_path)
 void methodRC(string dir_path)
 {
 	Directory dir;
-	vector<string> fileNames = dir.GetListFiles(dir_path, "*.jpg", false);
+	vector<string> fileNames = dir.GetListFiles(dir_path, "*.png", false);
 
 	for (int i = 0; i < fileNames.size(); i++)
 	{ 
@@ -202,7 +202,7 @@ int main(int argc, char *argv[])
 	cout << "Please choose mode: (0)OF (1)RC (2)Fusion  " << endl;	// 模式选择 (0)光流 (1)RC (2)前两种方法结合
 	int mode = 0;
 	cin >> mode;
-	string db_dir = "F:/git/paper1st/SalBenchmark-master/Data/DataSet3/ImgsOurs/";
+	string db_dir = "D:/buffer/SegTrackv2/JPEGImages/hummingbird/";
 	switch (mode)
 	{
 	case 0:

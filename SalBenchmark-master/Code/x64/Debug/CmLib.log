@@ -1,17 +1,8 @@
-﻿Build started 2017/5/14 18:30:21.
+﻿Build started 2017/5/17 14:24:33.
      1>Project "F:\git\paper1st\SalBenchmark-master\Code\CmLib\CmLib.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.pch" /Fo"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\\" /Fd"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Basic\CmCv.cpp Basic\CmDefinition.cpp Basic\CmFile.cpp Cluster\CmAPCluster.cpp Cluster\CmColorQua.cpp Cluster\CmGMM.cpp Illustration\CmEvaluation.cpp Illustration\CmIllu.cpp OtherAlg\CmCurveEx.cpp
-         CmCurveEx.cpp
-         CmIllu.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _LIB /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"stdafx.h" /Fp"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.pch" /Fo"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\\" /Fd"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\vc120.pdb" /Gd /TP /errorReport:prompt Illustration\CmEvaluation.cpp
          CmEvaluation.cpp
-         CmGMM.cpp
-         CmColorQua.cpp
-         CmAPCluster.cpp
-         CmFile.cpp
-         CmDefinition.cpp
-         CmCv.cpp
-         Generating Code...
        Lib:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\Lib.exe /OUT:"F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmLibd.lib" /NOLOGO /MACHINE:X64 "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmCv.obj"
          "F:\git\paper1st\SalBenchmark-master\Code\x64\Debug\CmDefinition.obj"
@@ -52,4 +43,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.23
+Time Elapsed 00:00:00.58
