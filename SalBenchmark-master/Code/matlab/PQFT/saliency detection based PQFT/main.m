@@ -9,8 +9,10 @@ N = length(seqs.img_list);
 for i=1:N
    img = imread(['F:\git\paper1st\SalBenchmark-master\Data\DataSet3\ImgsPQFT\', seqs.img_list(i).name]);
    out = getImage(img);
-   [~, frameName] = fileparts(seqs.img_list(i).name);
-   imwrite(out,  ['F:\git\paper1st\SalBenchmark-master\Data\DataSet3\Saliency\' frameName '_PQFT' '.png']);
+%    [~, frameName] = fileparts(seqs.img_list(i).name);
+%    imwrite(out,  ['F:\git\paper1st\SalBenchmark-master\Data\DataSet3\Saliency\' frameName '_PQFT' '.png']);
+   ofname = sprintf('F:/git/paper1st/SalBenchmark-master/Data/DataSet3/Saliency/%08d_PQFT.png',i-1);
+   imwrite(out, ofname);
 end
 
 %imwrite(out{i},  ['F:\git\paper1st\SalBenchmark-master\Data\DataSet3\Saliency\' num2str(i) '.png']);
