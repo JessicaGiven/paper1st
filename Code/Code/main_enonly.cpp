@@ -16,15 +16,10 @@ using namespace std;
 Mat computeSalMapOF(Mat *flow, Mat gray, float *max, float *mean)
 {
 	Mat result(gray.size(), CV_32FC1);
-	Mat result_en(gray.size(), CV_32FC1);
-	Mat result_dst(gray.size(), CV_32FC1);
 	float f1;
 	float f2;
-	float f3_en[4];
-	float f3_dst = 0;
+	float f3[4];
 	float temp = 0;
-	float f1_dst[3][3];
-	float f2_dst[3][3];
 	 
 	for (int i = 0; i < flow[0].rows; i++)
 	{
@@ -34,74 +29,16 @@ Mat computeSalMapOF(Mat *flow, Mat gray, float *max, float *mean)
 			{
 				f1 = flow[fi].ptr<float>(i, j)[0];
 				f2 = flow[fi].ptr<float>(i, j)[1];
-				f3_en[fi] = sqrt(f1*f1 * 50 + f2*f2 * 50) / 255; // 100 和 255 都可以修改，影响显著图的整体显著度
-				if (fi == 0)
-				{
-					if ((i == 0) || (i == flow[0].rows - 1) || (j == 0) || (j == flow[0].cols - 1))
-					{
-						f3_dst = 0;
-					}
-					else
-					{
-						f1_dst[1][1] = flow[fi].ptr<float>(i, j)[0];
-						f2_dst[1][1] = flow[fi].ptr<float>(i, j)[1];
-
-						f1_dst[0][0] = flow[fi].ptr<float>(i - 1, j - 1)[0];
-						f2_dst[0][0] = flow[fi].ptr<float>(i - 1, j - 1)[1];
-
-						f1_dst[0][1] = flow[fi].ptr<float>(i - 1, j)[0];
-						f2_dst[0][1] = flow[fi].ptr<float>(i - 1, j)[1];
-
-						f1_dst[0][2] = flow[fi].ptr<float>(i - 1, j + 1)[0];
-						f2_dst[0][2] = flow[fi].ptr<float>(i - 1, j + 1)[1];
-
-						f1_dst[1][0] = flow[fi].ptr<float>(i, j - 1)[0];
-						f2_dst[1][0] = flow[fi].ptr<float>(i, j - 1)[1];
-
-						f1_dst[1][2] = flow[fi].ptr<float>(i, j + 1)[0];
-						f2_dst[1][2] = flow[fi].ptr<float>(i, j + 1)[1];
-
-						f1_dst[2][0] = flow[fi].ptr<float>(i + 1, j - 1)[0];
-						f2_dst[2][0] = flow[fi].ptr<float>(i + 1, j - 1)[1];
-
-						f1_dst[2][1] = flow[fi].ptr<float>(i + 1, j)[0];
-						f2_dst[2][1] = flow[fi].ptr<float>(i + 1, j)[1];
-
-						f1_dst[2][2] = flow[fi].ptr<float>(i + 1, j + 1)[0];
-						f2_dst[2][2] = flow[fi].ptr<float>(i + 1, j + 1)[1];
-
-						f3_dst = 0;
-						for (int ii = 0; ii < 3; ii++)
-						{
-							for (int jj = 0; jj < 3; jj++)
-							{
-								if (!((ii == 1) && (jj == 1)))
-								{
-									f3_dst += ((f1_dst[1][1] * f1_dst[ii][jj]) + (f2_dst[1][1] * f2_dst[ii][jj])) /
-										sqrt(((f1_dst[1][1] * f1_dst[1][1]) + (f2_dst[1][1] * f2_dst[1][1])) *
-										((f1_dst[ii][jj] * f1_dst[ii][jj]) + (f2_dst[ii][jj] * f2_dst[ii][jj])));
-								}
-
-							}
-
-						}
-					}
-					f3_dst /= 8;
-					if (abs(f3_dst) > 1)
-						f3_dst = 0;
-					result_dst.at<float>(i, j) = abs(f3_dst);
-				}
+				f3[fi] = sqrt(f1*f1 * 100 + f2*f2 * 100) / 255; // 100 和 255 都可以修改，影响显著图的整体显著度
 			}
-			temp = 0.9 * f3_en[0] + 0.5 * f3_en[1] + 0.3 * f3_en[2] + 0.1 * f3_en[3]; // 关键平方加权和公式
+			temp = 0.8 * f3[0] + 0.6 * f3[1] + 0.4 * f3[2] + 0.2 * f3[3]; // 关键平方加权和公式
 			if (*max < temp) *max = temp;
-			result_en.at<float>(i, j) = temp;
+			result.at<float>(i, j) = temp;
 			*mean += temp;
 		}
 	}
 	*mean /= (flow[0].rows * flow[0].cols);
-	result_en = result_en.mul(1 / *max);
-
-	multiply(result_en, result_dst, result);
+	result = result.mul(1 / *max);
 
 	return result;
 }
@@ -149,7 +86,6 @@ void methodOF(string dir_path)
 		}
 		float max = 0;
 		float mean = 0;
-
 		Mat flow_result = computeSalMapOF(flow, frame[0], &max, &mean); // 计算5帧之间的显著图
 		imshow("Sal_Map_OF", flow_result);
 
@@ -234,7 +170,6 @@ void methodFU(string dir_path)
 			}
 			float max = 0; // 存储光流显著图最大值
 			float mean = 0; // 存储光流显著图均值
-
 			Mat salOF = computeSalMapOF(flow, frame[0], &max, &mean); // 计算5帧之间的光流显著图
 
 			string fileFullName = dir_path + fileNames[i - 4];
@@ -251,7 +186,7 @@ void methodFU(string dir_path)
 
 			//string sal_dir = "F:/git/paper1st/SalBenchmark-master/Data/DataSet3/";
 			//imwrite(sal_dir + "Saliency/0000000" + str + "_OURS.png", sal_all * 255);
-			string sal_dir = "F:/git/paper1st/SalBenchmark-master/Data/DataSet3/Saliency_test/";
+			string sal_dir = "F:/git/paper1st/SalBenchmark-master/Data/DataSet3/Saliency/";
 			imwrite(sal_dir + "0000000" + str + "_OURS.png", sal_all * 255);
 			count++;
 
