@@ -140,4 +140,3 @@ methodLabels = {'OURS', 'FT', 'RC', 'GBVS', 'SSEG', 'FOGR', 'PQFT'};
 legend('CutFT', 'CutSC');
 xticklabel_rotate([1:7],90, methodLabels,'interpreter','none');
 title('FMeasure');
-
