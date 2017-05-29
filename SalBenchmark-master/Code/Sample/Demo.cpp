@@ -16,12 +16,13 @@ int _tmain(int argc, _TCHAR* argv[])
 // "AC", "FT", "GC", "HC", "RC", "GMR", "GU", "MSS"  is exe.
 // "PCA", "SWD" is Matlab Code, you can run them in  "./Code/matlab/RunAll.m"
 	const char* _methodNames[] = {
-		"OURS", "FT", /*"GC", "HC", */"RC", /*"GMR", "GU", "MSS", /*"PCA", "SWD",*/ "GBVS", "SSEG", "FOGR", "PQFT"
+		/*"OURS", "FT", /*"GC", "HC", *//*"RC"*/ /*"GMR", "GU", "MSS", /*"PCA", "SWD",*/ /*"GBVS", "SSEG", "FOGR", "PQFT"*/
+		"FT", "GBVS", "PQFT", "SSEG", "RC", "OURS"
 	}; 
 //	const char* _exeNames[] = { "AC", "FT", "GC", "HC", "RC", "GMR", "GU", "MSS" }; 
 //	"AC", be caution with AC, which might results in many pop up windows , 
 //	if you want to try, you can put it into _exeNames[].
-	const char* _exeNames[] = { "OURS", "FT", "RC"/*"GC", "HC", "RC", "GMR", "GU", "MSS"*/ };
+	const char* _exeNames[] = { "FT", "RC", "OURS"/*"GC", "HC", "RC", "GMR", "GU", "MSS"*/ };
 	const char* _dbNames[] = { "DataSet3" };  //{ "DataSet1", "DataSet2" }; 
 
 	vecS dbNames = charPointers2StrVec(_dbNames);
